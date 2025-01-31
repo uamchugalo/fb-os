@@ -697,7 +697,7 @@ export function ServiceOrderForm() {
               <option value="">Selecione um material</option>
               {materials.map((material) => (
                 <option key={material.id} value={material.id}>
-                  {material.name} - R$ {material.price.toFixed(2)}
+                  {material.name} - R$ {(material.price || 0).toFixed(2)}
                 </option>
               ))}
             </select>
@@ -707,7 +707,7 @@ export function ServiceOrderForm() {
                 <div key={index} className="flex items-center space-x-4 p-2 bg-gray-50 rounded-md">
                   <div className="flex-grow">
                     <p className="text-sm font-medium text-gray-900">{item.material.name}</p>
-                    <p className="text-sm text-gray-500">R$ {item.material.price.toFixed(2)}</p>
+                    <p className="text-sm text-gray-500">R$ {(item.material.price || 0).toFixed(2)}</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
