@@ -5,7 +5,7 @@ import { CompanyInfo } from './components/CompanyInfo';
 import { Auth } from './components/Auth';
 import { supabase } from './lib/supabase';
 import type { User } from './lib/supabase';
-import { Wrench, ClipboardList, Calculator, Settings, List, Building2, LogOut } from 'lucide-react';
+import { Wrench, ClipboardList, Calculator, Settings, List, Building2, LogOut, Menu, X } from 'lucide-react';
 import { ServiceOrderForm } from './components/ServiceOrderForm';
 import { MaterialsManagement } from './components/MaterialsManagement';
 import { AccountingDashboard } from './components/AccountingDashboard';
@@ -14,6 +14,7 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState('orders');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Verificar sessão atual
@@ -34,6 +35,11 @@ function App() {
     await supabase.auth.signOut();
   };
 
+  const handleTabChange = (tab: string) => {
+    setCurrentTab(tab);
+    setIsMobileMenuOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -51,6 +57,14 @@ function App() {
     );
   }
 
+  const menuItems = [
+    { id: 'orders', label: 'Nova OS', icon: ClipboardList },
+    { id: 'order-list', label: 'Lista de OS', icon: List },
+    { id: 'materials', label: 'Materiais', icon: Settings },
+    { id: 'accounting', label: 'Contabilidade', icon: Calculator },
+    { id: 'company', label: 'Empresa', icon: Building2 },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-sm">
@@ -61,86 +75,82 @@ function App() {
                 <Wrench className="h-8 w-8 text-blue-500" />
                 <span className="ml-2 text-xl font-bold text-gray-900">Sistema OS</span>
               </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              {/* Menu para desktop */}
+              <div className="hidden md:ml-6 md:flex md:space-x-8">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleTabChange(item.id)}
+                    className={`${
+                      currentTab === item.id
+                        ? 'border-blue-500 text-gray-900'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                  >
+                    <item.icon className="h-5 w-5 mr-1" />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Botão de logout e menu móvel */}
+            <div className="flex items-center">
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="ml-2 hidden sm:inline">Sair</span>
+              </button>
+              
+              {/* Botão do menu móvel */}
+              <div className="flex items-center md:hidden ml-4">
                 <button
-                  onClick={() => setCurrentTab('orders')}
-                  className={`${
-                    currentTab === 'orders'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
                 >
-                  <ClipboardList className="h-5 w-5 mr-1" />
-                  Nova OS
-                </button>
-                <button
-                  onClick={() => setCurrentTab('order-list')}
-                  className={`${
-                    currentTab === 'order-list'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  <List className="h-5 w-5 mr-1" />
-                  Lista de OS
-                </button>
-                <button
-                  onClick={() => setCurrentTab('materials')}
-                  className={`${
-                    currentTab === 'materials'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  <Settings className="h-5 w-5 mr-1" />
-                  Materiais
-                </button>
-                <button
-                  onClick={() => setCurrentTab('accounting')}
-                  className={`${
-                    currentTab === 'accounting'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  <Calculator className="h-5 w-5 mr-1" />
-                  Financeiro
-                </button>
-                <button
-                  onClick={() => setCurrentTab('company')}
-                  className={`${
-                    currentTab === 'company'
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                >
-                  <Building2 className="h-5 w-5 mr-1" />
-                  Empresa
+                  {isMobileMenuOpen ? (
+                    <X className="block h-6 w-6" />
+                  ) : (
+                    <Menu className="block h-6 w-6" />
+                  )}
                 </button>
               </div>
             </div>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-600 mr-4">{user.email}</span>
+          </div>
+        </div>
+
+        {/* Menu móvel */}
+        <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden`}>
+          <div className="pt-2 pb-3 space-y-1">
+            {menuItems.map((item) => (
               <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                key={item.id}
+                onClick={() => handleTabChange(item.id)}
+                className={`${
+                  currentTab === item.id
+                    ? 'bg-blue-50 border-blue-500 text-blue-700'
+                    : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium w-full text-left flex items-center`}
               >
-                <LogOut className="h-4 w-4 mr-1.5" />
-                Sair
+                <item.icon className="h-5 w-5 mr-3" />
+                {item.label}
               </button>
-            </div>
+            ))}
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentTab === 'orders' && <ServiceOrderForm />}
-        {currentTab === 'order-list' && <ServiceOrderList />}
-        {currentTab === 'materials' && <MaterialsManagement />}
-        {currentTab === 'accounting' && <AccountingDashboard />}
-        {currentTab === 'company' && <CompanyInfo />}
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-4 sm:px-0">
+          {currentTab === 'orders' && <ServiceOrderForm />}
+          {currentTab === 'order-list' && <ServiceOrderList />}
+          {currentTab === 'materials' && <MaterialsManagement />}
+          {currentTab === 'accounting' && <AccountingDashboard />}
+          {currentTab === 'company' && <CompanyInfo />}
+        </div>
       </main>
-
       <Toaster position="top-right" />
     </div>
   );
