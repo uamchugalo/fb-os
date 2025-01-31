@@ -23,21 +23,35 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
+      
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm ci
+          echo "Dependencies installed"
+      
       - name: Build
-        run: npm run build
+        run: |
+          echo "Starting build..."
+          npm run build
+          echo "Build completed"
+          ls -la dist
+      
       - name: Setup Pages
         uses: actions/configure-pages@v3
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+          retention-days: 1
+      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
