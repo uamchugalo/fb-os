@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ['master']
-
+    branches: ["master"]
   workflow_dispatch:
 
 permissions:
@@ -12,11 +11,14 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,24 +29,15 @@ jobs:
           node-version: 18
           cache: 'npm'
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Build
         run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
-          name: github-pages
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
+          path: dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
-        with:
-          artifact_name: github-pages
