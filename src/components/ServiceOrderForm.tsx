@@ -525,403 +525,239 @@ export function ServiceOrderForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="space-y-6">
-        <h2 className="text-lg font-semibold mb-4">Informações do Cliente</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nome do Cliente</label>
-            <input
-              type="text"
-              {...register('customer.name')}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Telefone</label>
-            <input
-              type="tel"
-              {...register('customer.phone')}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Serviços</h2>
-          <button
-            type="button"
-            onClick={() => {
-              const newService = {
-                service_type: '',
-                equipment_type: '',
-                equipment_power: '',
-                description: '',
-                custom_service_value: ''
-              };
-              setValue('services', [...(watch('services') || []), newService]);
-            }}
-            className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
-          >
-            <Plus className="h-4 w-4 mr-1.5" />
-            Adicionar Serviço
-          </button>
-        </div>
-
-        {(watch('services') || []).map((service, index) => (
-          <div key={index} className="space-y-6 border-l-4 border-blue-200 pl-4 mt-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium">Serviço {index + 1}</h3>
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const services = watch('services');
-                    setValue(
-                      'services',
-                      services.filter((_, i) => i !== index)
-                    );
-                  }}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              )}
-            </div>
-            
+    <div className="bg-white shadow rounded-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-6">
+        {/* Seção do Cliente */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900">Informações do Cliente</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <select
-                {...register(`services.${index}.service_type`)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                required
-              >
-                <option value="">Selecione o tipo de serviço</option>
-                <option value="installation">Instalação</option>
-                <option value="maintenance">Manutenção</option>
-                <option value="cleaning">Limpeza</option>
-                <option value="gas_recharge">Recarga de Gás</option>
-                <option value="other">Outro</option>
-              </select>
+              <label className="block text-sm font-medium text-gray-700">Nome do Cliente</label>
+              <input
+                type="text"
+                {...register('customer.name')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
             </div>
-
-            {(service.service_type === 'installation' || service.service_type === 'cleaning') && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Tipo de Equipamento
-                </label>
-                <select
-                  {...register(`services.${index}.equipment_type`)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required={service.service_type === 'cleaning'}
-                >
-                  <option value="">Selecione o tipo de equipamento</option>
-                  <option value="split">Split</option>
-                  <option value="multi_split">Multi Split</option>
-                  <option value="cassete">Cassete</option>
-                  <option value="piso_teto">Piso Teto</option>
-                  <option value="janela">Janela</option>
-                  <option value="portatil">Portátil</option>
-                </select>
-              </div>
-            )}
-
-            {service.service_type === 'installation' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Potência</label>
-                  <select
-                    {...register(`services.${index}.equipment_power`)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="">Selecione a potência</option>
-                    <option value="7000">7.000 BTUs</option>
-                    <option value="9000">9.000 BTUs</option>
-                    <option value="12000">12.000 BTUs</option>
-                    <option value="18000">18.000 BTUs</option>
-                    <option value="24000">24.000 BTUs</option>
-                    <option value="30000">30.000 BTUs</option>
-                    <option value="36000">36.000 BTUs</option>
-                    <option value="48000">48.000 BTUs</option>
-                    <option value="60000">60.000 BTUs</option>
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {(service.service_type === 'maintenance' || 
-              service.service_type === 'gas_recharge' || 
-              service.service_type === 'other') && (
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Valor do Serviço
-                  <span className="text-sm text-gray-500 ml-2">
-                    (Informe o valor específico para este {
-                      service.service_type === 'maintenance' ? 'serviço de manutenção' : 
-                      service.service_type === 'gas_recharge' ? 'recarga de gás' : 
-                      'serviço'
-                    })
-                  </span>
-                </label>
-                <div className="flex items-center">
-                  <span className="text-gray-500 mr-2">R$</span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register(`services.${index}.custom_service_value`)}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-            )}
-
             <div>
-              <label className="block text-sm font-medium text-gray-700">Descrição do Serviço</label>
-              <textarea
-                {...register(`services.${index}.description`)}
-                rows={4}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              <label className="block text-sm font-medium text-gray-700">Telefone</label>
+              <input
+                type="tel"
+                {...register('customer.phone')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
           </div>
-        ))}
-
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Materiais Utilizados</h2>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-center space-x-4">
-              <select
-                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                onChange={(e) => addMaterial(e.target.value)}
-                value=""
-              >
-                <option value="">Selecione um material</option>
-                {materials.map((material) => (
-                  <option key={material.id} value={material.id}>
-                    {material.name} - R$ {material.default_price?.toFixed(2)} / {material.unit}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {selectedMaterials.map((item, index) => (
-              <div key={index} className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
-                <span className="flex-1">{item.material.name}</span>
-                <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => updateMaterialQuantity(index, Math.max(1, item.quantity - 1))}
-                    className="p-1 text-gray-500 hover:text-gray-700"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <input
-                    type="number"
-                    min="1"
-                    value={item.quantity}
-                    onChange={(e) => updateMaterialQuantity(index, parseInt(e.target.value) || 1)}
-                    className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => updateMaterialQuantity(index, item.quantity + 1)}
-                    className="p-1 text-gray-500 hover:text-gray-700"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                  <span className="w-32 text-right">
-                    R$ {(item.material.default_price * item.quantity).toFixed(2)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeMaterial(index)}
-                    className="p-1 text-red-500 hover:text-red-700"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {(selectedMaterials.length > 0 || watch('services')?.length > 0) && (
-              <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                <h3 className="font-semibold">Resumo do Orçamento</h3>
-                <div className="space-y-2">
-                  {selectedMaterials.length > 0 && (
-                    <div className="flex justify-between">
-                      <span>Total Materiais:</span>
-                      <span>R$ {calculateMaterialsTotal().toFixed(2)}</span>
-                    </div>
-                  )}
-                  {watch('services')?.length > 0 && (
-                    <div className="flex justify-between">
-                      <span>Total Serviços:</span>
-                      <span>R$ {calculateServicesTotal().toFixed(2)}</span>
-                    </div>
-                  )}
-                  <div className="border-t border-gray-200 pt-2">
-                    <div className="flex justify-between items-center">
-                      <span>Desconto:</span>
-                      <div className="flex items-center space-x-2">
-                        <span>R$</span>
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={discount}
-                          onChange={handleDiscountChange}
-                          className="w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                    <span>Total Final:</span>
-                    <span>R$ {calculateTotal().toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
+        {/* Seção de Localização */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Endereço</h2>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900">Localização</h3>
+            <button
+              type="button"
+              onClick={handleLocation}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Usar GPS
+            </button>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Rua</label>
               <input
                 type="text"
-                value={address.street}
-                onChange={(e) => setAddress({ ...address, street: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Nome da rua"
+                {...register('address.street')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Número</label>
-              <input
-                type="text"
-                value={address.number}
-                onChange={(e) => setAddress({ ...address, number: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Número"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Número</label>
+                <input
+                  type="text"
+                  {...register('address.number')}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Complemento</label>
+                <input
+                  type="text"
+                  {...register('address.complement')}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Complemento</label>
-              <input
-                type="text"
-                value={address.complement}
-                onChange={(e) => setAddress({ ...address, complement: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Apartamento, sala, etc."
-              />
-            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Bairro</label>
               <input
                 type="text"
-                value={address.neighborhood}
-                onChange={(e) => setAddress({ ...address, neighborhood: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Bairro"
+                {...register('address.neighborhood')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Cidade</label>
               <input
                 type="text"
-                value={address.city}
-                onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Cidade"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Estado</label>
-              <input
-                type="text"
-                value={address.state}
-                onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Estado"
+                {...register('address.city')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">CEP</label>
               <input
                 type="text"
-                value={address.zipCode}
-                onChange={(e) => setAddress({ ...address, zipCode: e.target.value })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="CEP"
+                {...register('address.zipCode')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <button
-              type="button"
-              onClick={handleLocation}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+        </div>
+
+        {/* Seção de Serviços */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900">Serviços</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Tipo de Serviço</label>
+              <select
+                {...register('service_type')}
+                onChange={(e) => {
+                  register('service_type').onChange(e);
+                  setShowCustomValueField(e.target.value === 'custom');
+                }}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option value="">Selecione o tipo de serviço</option>
+                <option value="installation">Instalação</option>
+                <option value="maintenance">Manutenção</option>
+                <option value="cleaning">Limpeza</option>
+                <option value="gas_recharge">Recarga de Gás</option>
+                <option value="custom">Outro</option>
+              </select>
+            </div>
+            
+            {showCustomValueField && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Valor Personalizado</label>
+                <input
+                  type="number"
+                  {...register('custom_service_value')}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Tipo de Equipamento</label>
+              <input
+                type="text"
+                {...register('equipment_type')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Potência</label>
+              <input
+                type="text"
+                {...register('equipment_power')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Descrição</label>
+            <textarea
+              {...register('description')}
+              rows={3}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            />
+          </div>
+        </div>
+
+        {/* Seção de Materiais */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900">Materiais</h3>
+          <div className="grid grid-cols-1 gap-4">
+            <select
+              onChange={(e) => addMaterial(e.target.value)}
+              value=""
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
             >
-              <MapPin className="h-5 w-5 mr-2" />
-              Capturar Localização GPS
-            </button>
+              <option value="">Selecione um material</option>
+              {materials.map((material) => (
+                <option key={material.id} value={material.id}>
+                  {material.name} - R$ {material.price.toFixed(2)}
+                </option>
+              ))}
+            </select>
+
+            <div className="space-y-2">
+              {selectedMaterials.map((item, index) => (
+                <div key={index} className="flex items-center space-x-4 p-2 bg-gray-50 rounded-md">
+                  <div className="flex-grow">
+                    <p className="text-sm font-medium text-gray-900">{item.material.name}</p>
+                    <p className="text-sm text-gray-500">R$ {item.material.price.toFixed(2)}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => updateMaterialQuantity(index, item.quantity - 1)}
+                      className="p-1 rounded-md hover:bg-gray-200"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => updateMaterialQuantity(index, item.quantity + 1)}
+                      className="p-1 rounded-md hover:bg-gray-200"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeMaterial(index)}
+                      className="p-1 text-red-600 hover:bg-red-100 rounded-md"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Preview do Orçamento */}
-        <div className="mt-8 border-t pt-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Resumo do Orçamento</h2>
-          <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Serviços:</span>
-              <span className="font-medium">
-                {new Intl.NumberFormat('pt-BR', { 
-                  style: 'currency', 
-                  currency: 'BRL' 
-                }).format(calculateServicesTotal())}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Materiais:</span>
-              <span className="font-medium">
-                {new Intl.NumberFormat('pt-BR', { 
-                  style: 'currency', 
-                  currency: 'BRL' 
-                }).format(calculateMaterialsTotal())}
-              </span>
-            </div>
-
-            <div className="border-t border-gray-200 my-2"></div>
-
-            <div className="flex justify-between items-center text-lg font-semibold">
-              <span className="text-gray-900">Total:</span>
-              <span className="text-blue-600">
-                {new Intl.NumberFormat('pt-BR', { 
-                  style: 'currency', 
-                  currency: 'BRL' 
-                }).format(calculateTotal())}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Botão de Salvar */}
-        <div className="flex justify-between mt-6">
+        {/* Botões de Ação */}
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+          <button
+            type="button"
+            onClick={generatePDF}
+            className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <FileDown className="h-4 w-4 mr-2" />
+            Gerar PDF
+          </button>
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
+            <Save className="h-4 w-4 mr-2" />
             Salvar OS
           </button>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
